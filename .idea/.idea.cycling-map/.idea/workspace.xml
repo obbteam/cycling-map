@@ -7,11 +7,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="86726afe-2fd4-4c55-84e0-de4b041a8532" name="Changes" comment="first commit" />
+    <list default="true" id="86726afe-2fd4-4c55-84e0-de4b041a8532" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/cycling-map/CalculateRoute.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/GeoJson.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/GeocodeParser.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/JsonContent.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/Location.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/RouteJson.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cycling-map/RouteParser.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.cycling-map/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.cycling-map/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cycling-map/MainWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/cycling-map/MainWindow.xaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cycling-map/MainWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/cycling-map/MainWindow.xaml.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DpaMonitoringSettings">
+    <option name="autoShow" value="false" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -21,18 +35,34 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "obbteam"
+  }
+}]]></component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/obbteam/cycling-map.git",
     "accountId": "973dbfc9-5162-4e43-b449-aed35bad3a4e"
   }
 }]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/2d7eea252964e69be94cb9c847b371b23e4dd470/src/libraries/System.Private.CoreLib/src/System/Runtime/ExceptionServices/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/2d7eea252964e69be94cb9c847b371b23e4dd470/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9e4675b272dd4b9ab305a68d4d11279ff618a0/84/c605dcf3/MessageBox.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4bda76b5cc453e1edf5d5c754c4a8215edbd3d3e4f80706dcf4f52a4f68979/EventRoute.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 7
 }]]></component>
   <component name="ProjectId" id="2hxmGiWJMCRhZk6r7TnSxkqBD2s" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -86,7 +116,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1718544008759</updated>
-      <workItem from="1718544009843" duration="743000" />
+      <workItem from="1718544009843" duration="20675000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -96,7 +126,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718544466539</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="test two integrate calculate route with map rendering">
+      <option name="closed" value="true" />
+      <created>1718544810607</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718544810607</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,7 +147,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="obidkhon" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -118,6 +168,32 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="first commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="first commit" />
+    <MESSAGE value="test two integrate calculate route with map rendering" />
+    <option name="LAST_COMMIT_MESSAGE" value="test two integrate calculate route with map rendering" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/cycling-map/MainWindow.xaml.cs</url>
+          <line>62</line>
+          <properties documentPath="C:\Users\obbte\RiderProjects\cycling-map\cycling-map\MainWindow.xaml.cs" containingFunctionPresentation="Method 'GetGeoCode'">
+            <startOffsets>
+              <option value="1977" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2028" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="DotNetProject">
+        <watch expression="firstPoint" language="C#" />
+        <watch expression="secondPoint" language="C#" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

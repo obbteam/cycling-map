@@ -1,0 +1,21 @@
+﻿<Window x:Class="cycling_map.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cycling_map"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1200">
+    <Grid>
+        <ScrollViewer Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Image Name="mapImage" />
+        </ScrollViewer>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
+            <Label x:Name="DisplayAddress" Content="" FontWeight="Bold"/>
+            <TextBox x:Name="txtAddress1" Width="190" Margin="0 40 0 10" KeyDown="txtAddress_KeyDown"/>
+            <TextBox x:Name="txtAddress2" Width="190" Margin="0 0 0 10" KeyDown="txtAddress2_KeyDown"/>
+            <Button Content="calculate shortest path" Click="btnLoadMap_Click" Width="190"/>
+        </StackPanel>
+    </Grid>
+</Window>

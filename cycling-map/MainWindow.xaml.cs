@@ -150,15 +150,15 @@ public partial class MainWindow : Window
         {
             drawingContext.DrawImage(tile, new Rect(0, 0, tile.PixelWidth, tile.PixelHeight));
 
-            DrawPoint(drawingContext, firstPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Red);
-
-            DrawPoint(drawingContext, secondPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Red);
-
 
             foreach (var point in RoutePoints)
             {
                 DrawPoint(drawingContext, point, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.CornflowerBlue);
             }
+
+            DrawPoint(drawingContext, firstPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Blue);
+
+            DrawPoint(drawingContext, secondPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Red);
         }
 
         RenderTargetBitmap renderBitmap = new RenderTargetBitmap(tile.PixelWidth, tile.PixelHeight, tile.DpiX,

@@ -7,16 +7,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="86726afe-2fd4-4c55-84e0-de4b041a8532" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cycling-map/CalculateRoute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/GeoJson.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/GeocodeParser.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/JsonContent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/Location.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/RouteJson.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cycling-map/RouteParser.cs" afterDir="false" />
+    <list default="true" id="86726afe-2fd4-4c55-84e0-de4b041a8532" name="Changes" comment="working route calculation&#10;working map and route rendering">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.cycling-map/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.cycling-map/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cycling-map/MainWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/cycling-map/MainWindow.xaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cycling-map/MainWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/cycling-map/MainWindow.xaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -116,7 +108,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1718544008759</updated>
-      <workItem from="1718544009843" duration="20675000" />
+      <workItem from="1718544009843" duration="20877000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -134,7 +126,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718544810607</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="working route calculation&#10;working map and route rendering">
+      <option name="closed" value="true" />
+      <created>1718568234835</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1718568234835</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -169,7 +169,8 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="first commit" />
     <MESSAGE value="test two integrate calculate route with map rendering" />
-    <option name="LAST_COMMIT_MESSAGE" value="test two integrate calculate route with map rendering" />
+    <MESSAGE value="working route calculation&#10;working map and route rendering" />
+    <option name="LAST_COMMIT_MESSAGE" value="working route calculation&#10;working map and route rendering" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

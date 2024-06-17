@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace cycling_map;
@@ -126,12 +127,12 @@ public partial class MainWindow : Window
 
             if (firstPoint != null)
             {
-                DrawPoint(drawingContext, firstPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Red);
+                DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Red);
             }
 
             if (secondPoint != null)
             {
-                DrawPoint(drawingContext, secondPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Blue);
+                DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Blue);
             }
         }
 
@@ -150,15 +151,14 @@ public partial class MainWindow : Window
         {
             drawingContext.DrawImage(tile, new Rect(0, 0, tile.PixelWidth, tile.PixelHeight));
 
-
-            foreach (var point in RoutePoints)
+            for (int i = 0; i + 1 < RoutePoints.Count; i++)
             {
-                DrawPoint(drawingContext, point, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.CornflowerBlue);
+                DrawLine(drawingContext, this.RoutePoints[i], this.RoutePoints[i + 1], _zoomLevel, Colors.Aquamarine);
             }
 
-            DrawPoint(drawingContext, firstPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Blue);
+            DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Blue);
 
-            DrawPoint(drawingContext, secondPoint, tile.PixelWidth, tile.PixelHeight, _zoomLevel, Colors.Red);
+            DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Red);
         }
 
         RenderTargetBitmap renderBitmap = new RenderTargetBitmap(tile.PixelWidth, tile.PixelHeight, tile.DpiX,
@@ -167,12 +167,23 @@ public partial class MainWindow : Window
         return renderBitmap;
     }
 
-    private void DrawPoint(DrawingContext drawingContext, Location point, int tileX, int tileY, int zoom, Color color)
+    private void DrawPoint(DrawingContext drawingContext, Location point, int zoom, Color color)
     {
         var (pixelX, pixelY) = LatLonToPixelXY(point.Lat(), point.Lon(), zoom);
         var (localX, localY) = (pixelX % 512, pixelY % 512);
 
-        drawingContext.DrawEllipse(new SolidColorBrush(color), null, new System.Windows.Point(localX, localY), 4, 4);
+        drawingContext.DrawEllipse(new SolidColorBrush(color), null, new System.Windows.Point(localX, localY), 3, 3);
+    }
+
+    private void DrawLine(DrawingContext drawingContext, Location point1, Location point2, int zoom, Color color)
+    {
+        var (pixelX1, pixelY1) = LatLonToPixelXY(point1.Lat(), point1.Lon(), zoom);
+        var (localX1, localY1) = (pixelX1 % 512, pixelY1 % 512);
+        var (pixelX2, pixelY2) = LatLonToPixelXY(point2.Lat(), point2.Lon(), zoom);
+        var (localX2, localY2) = (pixelX2 % 512, pixelY2 % 512);
+
+        drawingContext.DrawLine(new Pen(new SolidColorBrush(color), 2), new System.Windows.Point(localX1, localY1),
+            null, new System.Windows.Point(localX2, localY2), null);
     }
 
     public static (int pixelX, int pixelY) LatLonToPixelXY(double lat, double lon, int zoom)

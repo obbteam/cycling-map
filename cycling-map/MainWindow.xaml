@@ -16,6 +16,7 @@
             <TextBox x:Name="txtAddress1" Width="190" Margin="0 40 0 10" KeyDown="txtAddress_KeyDown"/>
             <TextBox x:Name="txtAddress2" Width="190" Margin="0 0 0 10" KeyDown="txtAddress2_KeyDown"/>
             <Button Content="calculate shortest path" Click="btnLoadMap_Click" Width="190"/>
+            <Button Margin="0 10 0 0 " Content="calculate route" Click="btnCalculate_Click" Width="190"/>
         </StackPanel>
     </Grid>
 </Window>

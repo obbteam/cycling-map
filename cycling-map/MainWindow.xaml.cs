@@ -31,6 +31,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         LoadMapTile(_zoomLevel, _tileX, _tileY); // load initial
+        //TODO: zoom out if the route is too long
+        //ASDSDJSDLKSDJ
     }
 
     private Location calculateBounds(int x, int y, int z)

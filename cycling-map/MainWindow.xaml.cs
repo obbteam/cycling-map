@@ -241,16 +241,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        List<Location> routePoints = new List<Location>
+        List<Location> initialPoints = new List<Location>
         {
             firstPoint,
             secondPoint
         };
-
-        var response = await CalculateRoute.GetRouteAsync(routePoints, ApiKey);
-
+        var responseSummary = new Summary();
+        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey, responseSummary);
+        routeInfoLabel.Content = $"Distance: {responseSummary.LengthInMeters.ToString()} meters.\n Departure time:{responseSummary.DepartureTime.ToString()}.\n arrival time:{responseSummary.ArrivalTime.ToString()}.\n";
         RoutePoints.AddRange(response);
-
         _zoomLevel = 22;
 
         calculateBoundingBox();

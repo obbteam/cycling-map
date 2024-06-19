@@ -4,7 +4,7 @@ namespace cycling_map;
 
 public class RouteParser
 {
-    public static List<Location> ParseRoute(string json)
+    public static List<Location> ParseRoute(string json, Summary responseSummary)
     {
         try
         {
@@ -16,8 +16,7 @@ public class RouteParser
             {
                 RoutePoints.Add(new Location(point.Latitude, point.Longitude));
             }
-            Summary responseSummary = new Summary();
-            responseSummary.TrafficLengthInMeters = routeData.Routes[0].Legs[0].Summary.LengthInMeters;
+            responseSummary.LengthInMeters = routeData.Routes[0].Legs[0].Summary.LengthInMeters;
             responseSummary.DepartureTime = routeData.Routes[0].Legs[0].Summary.DepartureTime;
             responseSummary.ArrivalTime = routeData.Routes[0].Legs[0].Summary.ArrivalTime;
 

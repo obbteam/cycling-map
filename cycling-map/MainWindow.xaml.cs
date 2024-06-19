@@ -137,12 +137,12 @@ public partial class MainWindow : Window
 
             if (firstPoint != null)
             {
-                DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Red);
+                DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Blue);
             }
 
             if (secondPoint != null)
             {
-                DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Blue);
+                DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Red);
             }
         }
 
@@ -266,7 +266,12 @@ public partial class MainWindow : Window
 
         var response = await CalculateRoute.GetRouteAsync(routePoints, ApiKey);
 
-        RoutePoints.AddRange(response);
+        //RoutePoints.AddRange(response);
+
+        foreach (var point in response)
+        {
+            RoutePoints.Add(point);
+        }
 
         _zoomLevel = 22;
 
@@ -343,7 +348,12 @@ public partial class MainWindow : Window
         var (tlx, tly) = calculateLonLatToXY(topleft);
         var botright = new Location(bbox.bottom, bbox.right);
         var (brx, bry) = calculateLonLatToXY(botright);
-        if (tlx != brx || tly != bry) _zoomLevel--;
+        while ((tlx != brx || tly != bry) && _zoomLevel > 0)
+        {
+            _zoomLevel--;
+            (tlx, tly) = calculateLonLatToXY(topleft);
+            (brx, bry) = calculateLonLatToXY(botright);
+        }
 
         (_tileX, _tileY) = calculateLonLatToXY(botright);
     }

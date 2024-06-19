@@ -26,9 +26,14 @@ public class CalculateRoute
 
             // Read the response as a string asynchronously
             string responseBody = await response.Content.ReadAsStringAsync();
+            
+            
+            Console.Write(responseBody);
 
             // Output the response body to console (or handle it as needed)
             return RouteParser.ParseRoute(responseBody);
+            
+            
         }
         catch (HttpRequestException e)
         {

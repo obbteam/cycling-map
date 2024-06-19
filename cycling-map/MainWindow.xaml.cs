@@ -15,8 +15,11 @@ public partial class MainWindow : Window
 {
     private const string ApiKey = "4Qz1nAMjo2oqVAGoe1VteCrgVlR6ieiS";
     private int _zoomLevel = 13;
-    private int _tileX = 4252;
-    private int _tileY = 2697;
+    private int _tileX = 4250;
+    //4252,4250
+    private int _tileY = 2696;
+    //2697,2696
+    private const double tileSize = 9.55463;
     string address = "Molenstraat 74";
     string address2 = "Oosterstraat 190";
     private string coordUrl;
@@ -35,7 +38,7 @@ public partial class MainWindow : Window
         //ASDSDJSDLKSDJ
     }
 
-    private Location calculateBounds(int x, int y, int z)
+    private Location calculateXYZToLatLon(int x, int y, int z)
     {
         var lon = (x / Math.Pow(2, z)) * 360.0 - 180.0;
 
@@ -43,6 +46,13 @@ public partial class MainWindow : Window
         var lat = (180.0 / Math.PI) * Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n)));
 
         return new Location(lat, lon);
+    }
+    private (int, int) calculateLonLatToXY(Location location)
+    {
+        double xyTilesCount = Math.Pow(2, _zoomLevel);
+        int x = (int)Math.Floor((location.Lon() + 180.0) / 360.0 * xyTilesCount);
+        int y = (int)Math.Floor((1.0 - Math.Log(Math.Tan(location.Lat() * Math.PI / 180.0) + 1.0 / Math.Cos(location.Lat() * Math.PI / 180.0)) / Math.PI) / 2.0 * xyTilesCount);
+        return (x, y);
     }
 
     public async Task GetGeoCode(HttpClient client)
@@ -78,10 +88,8 @@ public partial class MainWindow : Window
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                if (SearchPressed)
-                {
-                    await GetGeoCode(client);
-                }
+
+
 
                 var imageData = await response.Content.ReadAsByteArrayAsync();
                 using (var ms = new MemoryStream(imageData))
@@ -97,12 +105,12 @@ public partial class MainWindow : Window
                     mapImage.Source = renderBitmap;
                 }
 
-                if (firstPoint != null && secondPoint != null)
-                {
-                    Location topLeft = calculateBounds(x, y, zoom);
-                    Location botRight = calculateBounds(x + 1, y + 1, zoom);
+                //if (firstPoint != null && secondPoint != null)
+                //{
+                  //  Location topLeft = calculateXYZToLatLon(x, y, zoom);
+                   // Location botRight = calculateXYZToLatLon(x + 1, y + 1, zoom);
                     // Add code to display pixelCoordinate on the map, if needed.
-                }
+                //}
             }
             catch (HttpRequestException e)
             {
@@ -207,15 +215,20 @@ public partial class MainWindow : Window
     }
 
 
-    private void btnLoadMap_Click(object sender, RoutedEventArgs e)
+    private async void btnLoadMap_Click(object sender, RoutedEventArgs e)
     {
-        SearchPressed = true;
-        address = txtAddress1.Text + " enschede";
-        address2 = txtAddress2.Text + " enschede";
+        address = txtAddress1.Text;
+        address2 = txtAddress2.Text;
         address = Uri.EscapeDataString(address); // Corrected to get text from input fields
         address2 = Uri.EscapeDataString(address2); // Corrected to get text from input fields
 
+        RoutePoints.Clear();
+
         DisplayAddress.Content = $"From {address.ToString()} to {address2.ToString()}";
+
+        await GetGeoCode(new HttpClient());
+        _zoomLevel = 22;
+        calculateBoundingBox();
         LoadMapTile(_zoomLevel, _tileX, _tileY);
     }
 
@@ -253,13 +266,85 @@ public partial class MainWindow : Window
 
         var response = await CalculateRoute.GetRouteAsync(routePoints, ApiKey);
 
-        foreach (var point in response)
-        {
-            RoutePoints.Add(point);
-        }
+        RoutePoints.AddRange(response);
+
+        _zoomLevel = 22;
+
+        calculateBoundingBox();
 
         LoadMapTile(_zoomLevel, _tileX, _tileY);
 
         MessageBox.Show("Route calculation complete.");
+    }
+
+    private struct BoundingBox
+    {
+        public double left, right, top, bottom;
+
+        public BoundingBox(double left, double right, double top, double bottom)
+        {
+            this.left = left;
+            this.right = right;
+            this.top = top;
+            this.bottom = bottom;
+        }
+    }
+
+    private void calculateBoundingBox()
+    {
+        var bbox = new BoundingBox(firstPoint.Lon(), firstPoint.Lon(), firstPoint.Lat(), firstPoint.Lat());
+        foreach (var point in RoutePoints)
+        {
+            if (point.Lat() > bbox.top)
+            {
+                bbox.top = point.Lat();
+            }
+            if (point.Lat() < bbox.bottom)
+            {
+                bbox.bottom = point.Lat();
+            }
+            if (point.Lon() < bbox.left)
+            {
+                bbox.left = point.Lon();
+            }
+            if (point.Lon() > bbox.right)
+            {
+                bbox.right = point.Lon();
+            }
+        }
+        if (secondPoint.Lat() > bbox.top)
+        {
+            bbox.top = secondPoint.Lat();
+        }
+        if (secondPoint.Lat() < bbox.bottom)
+        {
+            bbox.bottom = secondPoint.Lat();
+        }
+        if (secondPoint.Lon() < bbox.left)
+        {
+            bbox.left = secondPoint.Lon();
+        }
+        if (secondPoint.Lon() > bbox.right)
+        {
+            bbox.right = secondPoint.Lon();
+        }
+
+
+        double bboxWidthDeg = bbox.right - bbox.left;
+        double bboxHeightDeg = bbox.top - bbox.bottom;
+
+        double bboxWidthT = (1 - Math.Cos(bboxWidthDeg)) / 2 * 6371000;
+        double bboxHeightT = (1 - Math.Cos(bboxHeightDeg)) / 2 * 6371000;
+
+        double bboxSize = Math.Max(bboxWidthT, bboxHeightT);
+
+        _zoomLevel = 23 - (int)Math.Log2(bboxSize);
+        var topleft = new Location(bbox.top, bbox.left);
+        var (tlx, tly) = calculateLonLatToXY(topleft);
+        var botright = new Location(bbox.bottom, bbox.right);
+        var (brx, bry) = calculateLonLatToXY(botright);
+        if (tlx != brx || tly != bry) _zoomLevel--;
+
+        (_tileX, _tileY) = calculateLonLatToXY(botright);
     }
 }

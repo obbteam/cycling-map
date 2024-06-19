@@ -18,7 +18,7 @@ public class CalculateRoute
 
             // Setup the endpoint URL with your API key and route coordinates
             string url =
-                $"https://api.tomtom.com/routing/1/calculateRoute/{locations}/json?travelMode=bicycle&key={apiKey}";
+                $"https://api.tomtom.com/routing/1/calculateRoute/{locations}/json?travelMode=pedestrian&key={apiKey}";
 
             // Make the asynchronous GET request
             HttpResponseMessage response = await _client.GetAsync(url);

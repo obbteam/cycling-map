@@ -16,6 +16,10 @@ public class RouteParser
             {
                 RoutePoints.Add(new Location(point.Latitude, point.Longitude));
             }
+            Summary responseSummary = new Summary();
+            responseSummary.TrafficLengthInMeters = routeData.Routes[0].Legs[0].Summary.LengthInMeters;
+            responseSummary.DepartureTime = routeData.Routes[0].Legs[0].Summary.DepartureTime;
+            responseSummary.ArrivalTime = routeData.Routes[0].Legs[0].Summary.ArrivalTime;
 
             return RoutePoints;
         }

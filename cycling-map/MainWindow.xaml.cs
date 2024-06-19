@@ -15,9 +15,12 @@ public partial class MainWindow : Window
 {
     private const string ApiKey = "4Qz1nAMjo2oqVAGoe1VteCrgVlR6ieiS";
     private int _zoomLevel = 13;
+
     private int _tileX = 4250;
+
     //4252,4250
     private int _tileY = 2696;
+
     //2697,2696
     private const double tileSize = 9.55463;
     string address = "Molenstraat 74";
@@ -47,34 +50,44 @@ public partial class MainWindow : Window
 
         return new Location(lat, lon);
     }
+
     private (int, int) calculateLonLatToXY(Location location)
     {
         double xyTilesCount = Math.Pow(2, _zoomLevel);
         int x = (int)Math.Floor((location.Lon() + 180.0) / 360.0 * xyTilesCount);
-        int y = (int)Math.Floor((1.0 - Math.Log(Math.Tan(location.Lat() * Math.PI / 180.0) + 1.0 / Math.Cos(location.Lat() * Math.PI / 180.0)) / Math.PI) / 2.0 * xyTilesCount);
+        int y = (int)Math.Floor(
+            (1.0 - Math.Log(Math.Tan(location.Lat() * Math.PI / 180.0) +
+                            1.0 / Math.Cos(location.Lat() * Math.PI / 180.0)) / Math.PI) / 2.0 * xyTilesCount);
         return (x, y);
     }
 
     public async Task GetGeoCode(HttpClient client)
     {
-        coordUrl =
-            $"https://api.tomtom.com/search/2/geocode/{address}.json?storeResult=false&limit=1&countrySet=NL&view=Unified&key={ApiKey}";
-        coordUrl2 =
-            $"https://api.tomtom.com/search/2/geocode/{address2}.json?storeResult=false&limit=1&countrySet=NL&view=Unified&key={ApiKey}";
+        try
+        {
+            coordUrl =
+                $"https://api.tomtom.com/search/2/geocode/{address}.json?storeResult=false&limit=1&view=Unified&key={ApiKey}";
+            coordUrl2 =
+                $"https://api.tomtom.com/search/2/geocode/{address2}.json?storeResult=false&limit=1&view=Unified&key={ApiKey}";
 
 
-        var coordResponse = await client.GetAsync(coordUrl);
-        var coordResponse2 = await client.GetAsync(coordUrl2);
+            var coordResponse = await client.GetAsync(coordUrl);
+            var coordResponse2 = await client.GetAsync(coordUrl2);
 
-        coordResponse.EnsureSuccessStatusCode();
-        coordResponse2.EnsureSuccessStatusCode();
+            coordResponse.EnsureSuccessStatusCode();
+            coordResponse2.EnsureSuccessStatusCode();
 
 
-        var coordJson = await coordResponse.Content.ReadAsStringAsync();
-        var coordJson2 = await coordResponse2.Content.ReadAsStringAsync();
+            var coordJson = await coordResponse.Content.ReadAsStringAsync();
+            var coordJson2 = await coordResponse2.Content.ReadAsStringAsync();
 
-        firstPoint = GeocodeParser.ParseGeocode(coordJson);
-        secondPoint = GeocodeParser.ParseGeocode(coordJson2);
+            firstPoint = GeocodeParser.ParseGeocode(coordJson);
+            secondPoint = GeocodeParser.ParseGeocode(coordJson2);
+        }
+        catch (HttpRequestException e)
+        {
+            MessageBox.Show($"Request error: {e.Message}");
+        }
     }
 
     private async void LoadMapTile(int zoom, int x, int y)
@@ -89,8 +102,6 @@ public partial class MainWindow : Window
                 response.EnsureSuccessStatusCode();
 
 
-
-
                 var imageData = await response.Content.ReadAsByteArrayAsync();
                 using (var ms = new MemoryStream(imageData))
                 {
@@ -100,16 +111,15 @@ public partial class MainWindow : Window
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.EndInit();
 
-                    var renderBitmap = DrawPointOnTile(bitmap, firstPoint, secondPoint);
-                    if (RoutePoints.Count > 0) renderBitmap = DrawRoute(bitmap, RoutePoints, firstPoint, secondPoint);
+                    var renderBitmap = DrawRoute(bitmap, RoutePoints, firstPoint, secondPoint);
                     mapImage.Source = renderBitmap;
                 }
 
                 //if (firstPoint != null && secondPoint != null)
                 //{
-                  //  Location topLeft = calculateXYZToLatLon(x, y, zoom);
-                   // Location botRight = calculateXYZToLatLon(x + 1, y + 1, zoom);
-                    // Add code to display pixelCoordinate on the map, if needed.
+                //  Location topLeft = calculateXYZToLatLon(x, y, zoom);
+                // Location botRight = calculateXYZToLatLon(x + 1, y + 1, zoom);
+                // Add code to display pixelCoordinate on the map, if needed.
                 //}
             }
             catch (HttpRequestException e)
@@ -128,31 +138,6 @@ public partial class MainWindow : Window
     }
 
 
-    private RenderTargetBitmap DrawPointOnTile(BitmapImage tile, Location firstPoint, Location secondPoint)
-    {
-        DrawingVisual drawingVisual = new DrawingVisual();
-        using (DrawingContext drawingContext = drawingVisual.RenderOpen())
-        {
-            drawingContext.DrawImage(tile, new Rect(0, 0, tile.PixelWidth, tile.PixelHeight));
-
-            if (firstPoint != null)
-            {
-                DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Blue);
-            }
-
-            if (secondPoint != null)
-            {
-                DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Red);
-            }
-        }
-
-        RenderTargetBitmap renderBitmap = new RenderTargetBitmap(tile.PixelWidth, tile.PixelHeight, tile.DpiX,
-            tile.DpiY, PixelFormats.Pbgra32);
-        renderBitmap.Render(drawingVisual);
-        return renderBitmap;
-    }
-
-
     private RenderTargetBitmap DrawRoute(BitmapImage tile, List<Location> RoutePoints, Location firstPoint,
         Location secondPoint)
     {
@@ -160,15 +145,17 @@ public partial class MainWindow : Window
         using (DrawingContext drawingContext = drawingVisual.RenderOpen())
         {
             drawingContext.DrawImage(tile, new Rect(0, 0, tile.PixelWidth, tile.PixelHeight));
-
-            for (int i = 0; i + 1 < RoutePoints.Count; i++)
+            if (RoutePoints.Count > 0)
             {
-                DrawLine(drawingContext, this.RoutePoints[i], this.RoutePoints[i + 1], _zoomLevel, Colors.Aquamarine);
+                for (int i = 0; i + 1 < RoutePoints.Count; i++)
+                {
+                    DrawLine(drawingContext, this.RoutePoints[i], this.RoutePoints[i + 1], _zoomLevel, Colors.Aquamarine);
+                }
             }
 
-            DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Blue);
+            if (this.firstPoint != null) DrawPoint(drawingContext, firstPoint, _zoomLevel, Colors.Blue);
 
-            DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Red);
+            if (this.secondPoint != null) DrawPoint(drawingContext, secondPoint, _zoomLevel, Colors.Red);
         }
 
         RenderTargetBitmap renderBitmap = new RenderTargetBitmap(tile.PixelWidth, tile.PixelHeight, tile.DpiX,
@@ -217,14 +204,10 @@ public partial class MainWindow : Window
 
     private async void btnLoadMap_Click(object sender, RoutedEventArgs e)
     {
-        address = txtAddress1.Text;
-        address2 = txtAddress2.Text;
-        address = Uri.EscapeDataString(address); // Corrected to get text from input fields
-        address2 = Uri.EscapeDataString(address2); // Corrected to get text from input fields
+        address = Uri.EscapeDataString(txtAddress1.Text); // Corrected to get text from input fields
+        address2 = Uri.EscapeDataString(txtAddress2.Text); // Corrected to get text from input fields
 
         RoutePoints.Clear();
-
-        DisplayAddress.Content = $"From {address.ToString()} to {address2.ToString()}";
 
         await GetGeoCode(new HttpClient());
         _zoomLevel = 22;
@@ -266,12 +249,7 @@ public partial class MainWindow : Window
 
         var response = await CalculateRoute.GetRouteAsync(routePoints, ApiKey);
 
-        //RoutePoints.AddRange(response);
-
-        foreach (var point in response)
-        {
-            RoutePoints.Add(point);
-        }
+        RoutePoints.AddRange(response);
 
         _zoomLevel = 22;
 
@@ -300,39 +278,21 @@ public partial class MainWindow : Window
         var bbox = new BoundingBox(firstPoint.Lon(), firstPoint.Lon(), firstPoint.Lat(), firstPoint.Lat());
         foreach (var point in RoutePoints)
         {
-            if (point.Lat() > bbox.top)
-            {
-                bbox.top = point.Lat();
-            }
-            if (point.Lat() < bbox.bottom)
-            {
-                bbox.bottom = point.Lat();
-            }
-            if (point.Lon() < bbox.left)
-            {
-                bbox.left = point.Lon();
-            }
-            if (point.Lon() > bbox.right)
-            {
-                bbox.right = point.Lon();
-            }
+            if (point.Lat() > bbox.top) bbox.top = point.Lat();
+            if (point.Lat() < bbox.bottom) bbox.bottom = point.Lat();
+
+            if (point.Lon() < bbox.left) bbox.left = point.Lon();
+
+            if (point.Lon() > bbox.right) bbox.right = point.Lon();
         }
-        if (secondPoint.Lat() > bbox.top)
-        {
-            bbox.top = secondPoint.Lat();
-        }
-        if (secondPoint.Lat() < bbox.bottom)
-        {
-            bbox.bottom = secondPoint.Lat();
-        }
-        if (secondPoint.Lon() < bbox.left)
-        {
-            bbox.left = secondPoint.Lon();
-        }
-        if (secondPoint.Lon() > bbox.right)
-        {
-            bbox.right = secondPoint.Lon();
-        }
+
+        if (secondPoint.Lat() > bbox.top) bbox.top = secondPoint.Lat();
+
+        if (secondPoint.Lat() < bbox.bottom) bbox.bottom = secondPoint.Lat();
+
+        if (secondPoint.Lon() < bbox.left) bbox.left = secondPoint.Lon();
+
+        if (secondPoint.Lon() > bbox.right) bbox.right = secondPoint.Lon();
 
 
         double bboxWidthDeg = bbox.right - bbox.left;
@@ -343,7 +303,7 @@ public partial class MainWindow : Window
 
         double bboxSize = Math.Max(bboxWidthT, bboxHeightT);
 
-        _zoomLevel = 23 - (int)Math.Log2(bboxSize);
+        _zoomLevel = 22 - (int)Math.Log2(bboxSize);
         var topleft = new Location(bbox.top, bbox.left);
         var (tlx, tly) = calculateLonLatToXY(topleft);
         var botright = new Location(bbox.bottom, bbox.right);

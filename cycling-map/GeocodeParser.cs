@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Windows;
 
 namespace cycling_map;
 
@@ -28,7 +29,8 @@ public static class GeocodeParser
         }
         catch (Exception ex)
         {
-            throw new Exception($"Failed to parse geocode JSON: {ex.Message}");
+            MessageBox.Show($"Failed to parse geocode JSON: {ex.Message}");
+            throw;
         }
     }
 }

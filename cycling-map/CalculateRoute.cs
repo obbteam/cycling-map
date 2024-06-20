@@ -9,12 +9,12 @@ public class CalculateRoute
 
 
     // Asynchronously get route data from TomTom Routing API
-    public static async Task<List<Location>> GetRouteAsync(List<Location> routePoints, string apiKey)
+    public static async Task<List<Location>> GetRouteAsync(List<Location> initialPoints, string apiKey, Summary responseSummary)
     {
         try
         {
             // Convertion of list of Route Points to a string format location:location
-            string locations = string.Join(":", routePoints.Select(p => p.Format()));
+            string locations = string.Join(":", initialPoints.Select(p => p.Format()));
 
             // Setup the endpoint URL with your API key and route coordinates
             string url =
@@ -27,11 +27,13 @@ public class CalculateRoute
             // Read the response as a string asynchronously
             string responseBody = await response.Content.ReadAsStringAsync();
             
-            
+            List<Location> routePoints = new List<Location>();
+            routePoints = RouteParser.ParseRoute(responseBody, responseSummary);
             Console.Write(responseBody);
 
+
             // Output the response body to console (or handle it as needed)
-            return RouteParser.ParseRoute(responseBody);
+            return routePoints;
             
             
         }

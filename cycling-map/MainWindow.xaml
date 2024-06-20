@@ -34,6 +34,7 @@
 
             <Button Content="Find locations" Click="btnLoadMap_Click" Width="190" />
             <Button Margin="0 10 0 0 " Content="Calculate route" Click="btnCalculate_Click" Width="190" />
+            <Label x:Name="routeInfoLabel" Content=" " />
         </StackPanel>
     </Grid>
 </Window>

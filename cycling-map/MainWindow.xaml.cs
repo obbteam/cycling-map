@@ -8,9 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace cycling_map;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
+
 public partial class MainWindow : Window
 {
     private const string ApiKey = "4Qz1nAMjo2oqVAGoe1VteCrgVlR6ieiS";
@@ -149,7 +147,7 @@ public partial class MainWindow : Window
             {
                 for (int i = 0; i + 1 < RoutePoints.Count; i++)
                 {
-                    DrawLine(drawingContext, this.RoutePoints[i], this.RoutePoints[i + 1], _zoomLevel, Colors.Aquamarine);
+                    DrawLine(drawingContext, this.RoutePoints[i], this.RoutePoints[i + 1], _zoomLevel, Colors.Indigo);
                 }
             }
 
@@ -241,16 +239,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        List<Location> routePoints = new List<Location>
+        List<Location> initialPoints = new List<Location>
         {
             firstPoint,
             secondPoint
         };
-
-        var response = await CalculateRoute.GetRouteAsync(routePoints, ApiKey);
-
+        var responseSummary = new Summary();
+        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey, responseSummary);
+        routeInfoLabel.Content = $"Distance: {responseSummary.LengthInMeters.ToString()} meters.\n Departure time:{responseSummary.DepartureTime.ToString()}.\n arrival time:{responseSummary.ArrivalTime.ToString()}.\n";
         RoutePoints.AddRange(response);
-
         _zoomLevel = 22;
 
         calculateBoundingBox();
@@ -303,7 +300,7 @@ public partial class MainWindow : Window
 
         double bboxSize = Math.Max(bboxWidthT, bboxHeightT);
 
-        _zoomLevel = 22 - (int)Math.Log2(bboxSize);
+        _zoomLevel = 22;
         var topleft = new Location(bbox.top, bbox.left);
         var (tlx, tly) = calculateLonLatToXY(topleft);
         var botright = new Location(bbox.bottom, bbox.right);

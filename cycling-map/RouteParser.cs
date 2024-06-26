@@ -2,17 +2,16 @@ using System.Text.Json;
 
 namespace cycling_map;
 
-public class RouteParser
+public class RouteParser : IParser
 {
-    public static Route ParseRoute(string json)
+    public T JsonParse<T>(string json)
     {
         try
         {
-            List<Location> RoutePoints = new List<Location>();
             // Deserialize the JSON string into a GeocodeResponse object
-            Route routeData = JsonSerializer.Deserialize<Route>(json);
+            var routeData = JsonSerializer.Deserialize<RouteJson>(json);
 
-            return routeData;
+            return (T)Convert.ChangeType(routeData.Routes[0], typeof(T));
         }
         catch (Exception ex)
         {

@@ -8,7 +8,6 @@ using System.Windows.Media.Imaging;
 
 namespace cycling_map;
 
-
 public partial class MainWindow : Window
 {
     private const string ApiKey = "4Qz1nAMjo2oqVAGoe1VteCrgVlR6ieiS";
@@ -79,8 +78,10 @@ public partial class MainWindow : Window
             var coordJson = await coordResponse.Content.ReadAsStringAsync();
             var coordJson2 = await coordResponse2.Content.ReadAsStringAsync();
 
-            firstPoint = GeocodeParser.ParseGeocode(coordJson);
-            secondPoint = GeocodeParser.ParseGeocode(coordJson2);
+            var GeoParse = new GeocodeParser();
+
+            firstPoint = GeoParse.JsonParse<Location>(coordJson);
+            secondPoint = GeoParse.JsonParse<Location>(coordJson2);
         }
         catch (HttpRequestException e)
         {
@@ -181,7 +182,7 @@ public partial class MainWindow : Window
             null, new System.Windows.Point(localX2, localY2), null);
     }
 
-    public static (int pixelX, int pixelY) LatLonToPixelXY(double lat, double lon, int zoom)
+    public (int pixelX, int pixelY) LatLonToPixelXY(double lat, double lon, int zoom)
     {
         // Ensure latitude is within bounds
         lat = Math.Max(Math.Min(lat, 85.05112878), -85.05112878);
@@ -316,10 +317,14 @@ public partial class MainWindow : Window
 
         (_tileX, _tileY) = calculateLonLatToXY(botright);
     }
+
     void collectSummaryInfo(Route RouteInfo)
     {
-        routeInfoLabel.Content = $"Distance: {RouteInfo.Summary.LengthInMeters.ToString()} meters.\n Departure time:{RouteInfo.Summary.DepartureTime.ToString()}.\n arrival time:{RouteInfo.Summary.ArrivalTime.ToString()}.\n";
+        routeInfoLabel.Content = $"Distance: {RouteInfo.Summary.LengthInMeters.ToString()} meters.\n " +
+                                 $"Departure time:{RouteInfo.Summary.DepartureTime.ToString()}.\n " +
+                                 $"arrival time:{RouteInfo.Summary.ArrivalTime.ToString()}.\n";
     }
+
     void collectRoutePoints(Route RouteInfo)
     {
         foreach (var point in RouteInfo.Legs[0].Points)

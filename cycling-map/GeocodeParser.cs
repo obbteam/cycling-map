@@ -3,9 +3,9 @@ using System.Windows;
 
 namespace cycling_map;
 
-public static class GeocodeParser
+public class GeocodeParser : IParser
 {
-    public static Location ParseGeocode(string json)
+    public T JsonParse<T>(string json)
     {
         try
         {
@@ -24,8 +24,10 @@ public static class GeocodeParser
             double latitude = result.position.lat;
             double longitude = result.position.lon;
 
+            var my_result = new Location(latitude, longitude);
+
             // Create and return a new Location object
-            return new Location(latitude, longitude);
+            return (T)Convert.ChangeType(my_result, typeof(T));
         }
         catch (Exception ex)
         {

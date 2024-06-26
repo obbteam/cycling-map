@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace cycling_map;
@@ -36,26 +35,6 @@ public partial class MainWindow : Window
         LoadMapTile(_zoomLevel, _tileX, _tileY); // load initial
         //TODO: zoom out if the route is too long
         //ASDSDJSDLKSDJ
-    }
-
-    private Location calculateXYZToLatLon(int x, int y, int z)
-    {
-        var lon = (x / Math.Pow(2, z)) * 360.0 - 180.0;
-
-        var n = Math.PI - (2.0 * Math.PI * y) / Math.Pow(2, z);
-        var lat = (180.0 / Math.PI) * Math.Atan(0.5 * (Math.Exp(n) - Math.Exp(-n)));
-
-        return new Location(lat, lon);
-    }
-
-    private (int, int) calculateLonLatToXY(Location location)
-    {
-        double xyTilesCount = Math.Pow(2, _zoomLevel);
-        int x = (int)Math.Floor((location.Lon() + 180.0) / 360.0 * xyTilesCount);
-        int y = (int)Math.Floor(
-            (1.0 - Math.Log(Math.Tan(location.Lat() * Math.PI / 180.0) +
-                            1.0 / Math.Cos(location.Lat() * Math.PI / 180.0)) / Math.PI) / 2.0 * xyTilesCount);
-        return (x, y);
     }
 
     public async Task GetGeoCode(HttpClient client)
@@ -165,7 +144,7 @@ public partial class MainWindow : Window
 
     private void DrawPoint(DrawingContext drawingContext, Location point, int zoom, Color color)
     {
-        var (pixelX, pixelY) = LatLonToPixelXY(point.Lat(), point.Lon(), zoom);
+        var (pixelX, pixelY) = MathCalculations.LatLonToPixelXY(point.Lat(), point.Lon(), zoom);
         var (localX, localY) = (pixelX % 512, pixelY % 512);
 
         drawingContext.DrawEllipse(new SolidColorBrush(color), null, new System.Windows.Point(localX, localY), 3, 3);
@@ -173,31 +152,13 @@ public partial class MainWindow : Window
 
     private void DrawLine(DrawingContext drawingContext, Location point1, Location point2, int zoom, Color color)
     {
-        var (pixelX1, pixelY1) = LatLonToPixelXY(point1.Lat(), point1.Lon(), zoom);
+        var (pixelX1, pixelY1) = MathCalculations.LatLonToPixelXY(point1.Lat(), point1.Lon(), zoom);
         var (localX1, localY1) = (pixelX1 % 512, pixelY1 % 512);
-        var (pixelX2, pixelY2) = LatLonToPixelXY(point2.Lat(), point2.Lon(), zoom);
+        var (pixelX2, pixelY2) = MathCalculations.LatLonToPixelXY(point2.Lat(), point2.Lon(), zoom);
         var (localX2, localY2) = (pixelX2 % 512, pixelY2 % 512);
 
         drawingContext.DrawLine(new Pen(new SolidColorBrush(color), 2), new System.Windows.Point(localX1, localY1),
             null, new System.Windows.Point(localX2, localY2), null);
-    }
-
-    public (int pixelX, int pixelY) LatLonToPixelXY(double lat, double lon, int zoom)
-    {
-        // Ensure latitude is within bounds
-        lat = Math.Max(Math.Min(lat, 85.05112878), -85.05112878);
-
-        // Convert latitude and longitude to pixel coordinates
-        double sinLatitude = Math.Sin(lat * Math.PI / 180);
-        int mapSize = 512 << zoom; // Size of the map in pixels at the given zoom level
-        double pixelX = ((lon + 180) / 360) * mapSize;
-        double pixelY = ((0.5 - Math.Log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI)) * mapSize);
-
-        // Determine the local pixel coordinates within the tile
-        int localX = (int)pixelX % 512;
-        int localY = (int)pixelY % 512;
-
-        return (localX, localY);
     }
 
 
@@ -305,17 +266,17 @@ public partial class MainWindow : Window
 
         _zoomLevel = 22;
         var topleft = new Location(bbox.top, bbox.left);
-        var (tlx, tly) = calculateLonLatToXY(topleft);
+        var (tlx, tly) = MathCalculations.calculateLonLatToXY(topleft, _zoomLevel);
         var botright = new Location(bbox.bottom, bbox.right);
-        var (brx, bry) = calculateLonLatToXY(botright);
+        var (brx, bry) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
         while ((tlx != brx || tly != bry) && _zoomLevel > 0)
         {
             _zoomLevel--;
-            (tlx, tly) = calculateLonLatToXY(topleft);
-            (brx, bry) = calculateLonLatToXY(botright);
+            (tlx, tly) = MathCalculations.calculateLonLatToXY(topleft, _zoomLevel);
+            (brx, bry) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
         }
 
-        (_tileX, _tileY) = calculateLonLatToXY(botright);
+        (_tileX, _tileY) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
     }
 
     void collectSummaryInfo(Route RouteInfo)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,8 +25,8 @@ public partial class MainWindow : Window
     string address2 = "Oosterstraat 190";
     private string coordUrl;
     private string coordUrl2;
-    private Location firstPoint;
-    private Location secondPoint;
+    private Location firstPoint = null;
+    private Location secondPoint = null;
     private List<Location> RoutePoints = new List<Location>();
     private bool SearchPressed = false;
 
@@ -121,11 +122,13 @@ public partial class MainWindow : Window
     {
         address = Uri.EscapeDataString(txtAddress1.Text); // Corrected to get text from input fields
         address2 = Uri.EscapeDataString(txtAddress2.Text); // Corrected to get text from input fields
-
+        if (String.IsNullOrEmpty(address) == true || String.IsNullOrEmpty(address2) == true )
+        {
+            MessageBox.Show("Please search for addresses first.");
+            return;
+        }
         RoutePoints.Clear();
-
         await GetGeoCode(new HttpClient());
-        //calculateBoundingBox();
         (_tileX, _tileY, _zoomLevel) = PointsComputation.calculateBoundingBox(firstPoint, secondPoint, RoutePoints);
         LoadMapTile(_zoomLevel, _tileX, _tileY);
     }
@@ -148,14 +151,13 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void btnCalculate_Click(object sender, RoutedEventArgs e)
+    public async void btnCalculate_Click(object sender, RoutedEventArgs e)
     {
         if (firstPoint == null || secondPoint == null)
         {
             MessageBox.Show("Please search for addresses first.");
             return;
         }
-
         List<Location> initialPoints = new List<Location>
         {
             firstPoint,

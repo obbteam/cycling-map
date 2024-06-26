@@ -12,7 +12,7 @@ namespace cycling_map
 {
     internal class PointsComputation
     {
-        List<Location> collectRoutePoints(Route RouteInfo)
+        public static List<Location> collectRoutePoints(Route RouteInfo)
         {
             var RoutePoints = new List<Location>();
 
@@ -23,7 +23,7 @@ namespace cycling_map
 
             return RoutePoints;
         }
-        private RenderTargetBitmap DrawRoute(BitmapImage tile, List<Location> RoutePoints, Location firstPoint,
+        public static RenderTargetBitmap DrawRoute(BitmapImage tile, List<Location> RoutePoints, Location firstPoint,
         Location secondPoint, int _zoomLevel)
         {
             DrawingVisual drawingVisual = new DrawingVisual();
@@ -49,19 +49,19 @@ namespace cycling_map
             return renderBitmap;
         }
 
-        private void DrawPoint(DrawingContext drawingContext, Location point, int zoom, Color color)
+        private static void DrawPoint(DrawingContext drawingContext, Location point, int zoom, Color color)
         {
-            var (pixelX, pixelY) = LatLonToPixelXY(point.Lat(), point.Lon(), zoom);
+            var (pixelX, pixelY) = MathCalculations.LatLonToPixelXY(point.Lat(), point.Lon(), zoom);
             var (localX, localY) = (pixelX % 512, pixelY % 512);
 
             drawingContext.DrawEllipse(new SolidColorBrush(color), null, new System.Windows.Point(localX, localY), 3, 3);
         }
 
-        private void DrawLine(DrawingContext drawingContext, Location point1, Location point2, int zoom, Color color)
+        private static void DrawLine(DrawingContext drawingContext, Location point1, Location point2, int zoom, Color color)
         {
-            var (pixelX1, pixelY1) = LatLonToPixelXY(point1.Lat(), point1.Lon(), zoom);
+            var (pixelX1, pixelY1) = MathCalculations.LatLonToPixelXY(point1.Lat(), point1.Lon(), zoom);
             var (localX1, localY1) = (pixelX1 % 512, pixelY1 % 512);
-            var (pixelX2, pixelY2) = LatLonToPixelXY(point2.Lat(), point2.Lon(), zoom);
+            var (pixelX2, pixelY2) = MathCalculations.LatLonToPixelXY(point2.Lat(), point2.Lon(), zoom);
             var (localX2, localY2) = (pixelX2 % 512, pixelY2 % 512);
 
             drawingContext.DrawLine(new Pen(new SolidColorBrush(color), 2), new System.Windows.Point(localX1, localY1),
@@ -80,7 +80,7 @@ namespace cycling_map
             }
         }
 
-        private (int,int, int) calculateBoundingBox(Location firstPoint, Location secondPoint, List<Location> RoutePoints)
+        public static (int,int, int) calculateBoundingBox(Location firstPoint, Location secondPoint, List<Location> RoutePoints)
         {
             var bbox = new BoundingBox(firstPoint.Lon(), firstPoint.Lon(), firstPoint.Lat(), firstPoint.Lat());
             foreach (var point in RoutePoints)
@@ -112,17 +112,17 @@ namespace cycling_map
 
             int _zoomLevel = 22;
             var topleft = new Location(bbox.top, bbox.left);
-            var (tlx, tly) = calculateLonLatToXY(topleft);
+            var (tlx, tly) = MathCalculations.calculateLonLatToXY(topleft, _zoomLevel);
             var botright = new Location(bbox.bottom, bbox.right);
-            var (brx, bry) = calculateLonLatToXY(botright);
+            var (brx, bry) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
             while ((tlx != brx || tly != bry) && _zoomLevel > 0)
             {
                 _zoomLevel--;
-                (tlx, tly) = calculateLonLatToXY(topleft);
-                (brx, bry) = calculateLonLatToXY(botright);
+                (tlx, tly) = MathCalculations.calculateLonLatToXY(topleft, _zoomLevel);
+                (brx, bry) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
             }
             int _tileX, _tileY;
-            (_tileX, _tileY) = calculateLonLatToXY(botright);
+            (_tileX, _tileY) = MathCalculations.calculateLonLatToXY(botright, _zoomLevel);
             return (_tileX, _tileY, _zoomLevel);
         }
     }

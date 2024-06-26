@@ -245,9 +245,11 @@ public partial class MainWindow : Window
             secondPoint
         };
         var responseSummary = new Summary();
-        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey, responseSummary);
-        routeInfoLabel.Content = $"Distance: {responseSummary.LengthInMeters.ToString()} meters.\n Departure time:{responseSummary.DepartureTime.ToString()}.\n arrival time:{responseSummary.ArrivalTime.ToString()}.\n";
-        RoutePoints.AddRange(response);
+        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey);
+        //routeInfoLabel.Content = $"Distance: {responseSummary.LengthInMeters.ToString()} meters.\n Departure time:{responseSummary.DepartureTime.ToString()}.\n arrival time:{responseSummary.ArrivalTime.ToString()}.\n";
+        collectSummaryInfo(response);
+        collectRoutePoints(response);
+
         _zoomLevel = 22;
 
         calculateBoundingBox();
@@ -313,5 +315,16 @@ public partial class MainWindow : Window
         }
 
         (_tileX, _tileY) = calculateLonLatToXY(botright);
+    }
+    void collectSummaryInfo(Route RouteInfo)
+    {
+        routeInfoLabel.Content = $"Distance: {RouteInfo.Summary.LengthInMeters.ToString()} meters.\n Departure time:{RouteInfo.Summary.DepartureTime.ToString()}.\n arrival time:{RouteInfo.Summary.ArrivalTime.ToString()}.\n";
+    }
+    void collectRoutePoints(Route RouteInfo)
+    {
+        foreach (var point in RouteInfo.Legs[0].Points)
+        {
+            RoutePoints.Add(new Location(point.Latitude, point.Longitude));
+        }
     }
 }

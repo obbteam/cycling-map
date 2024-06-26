@@ -9,7 +9,7 @@ public class CalculateRoute
 
 
     // Asynchronously get route data from TomTom Routing API
-    public static async Task<Route> GetRouteAsync(List<Location> initialPoints, string apiKey)
+    public static async Task<Route> GetRouteAsync(List<Location> initialPoints, string apiKey, string travelMode)
     {
         try
         {
@@ -18,7 +18,7 @@ public class CalculateRoute
 
             // Setup the endpoint URL with your API key and route coordinates
             string url =
-                $"https://api.tomtom.com/routing/1/calculateRoute/{locations}/json?travelMode=pedestrian&key={apiKey}";
+                $"https://api.tomtom.com/routing/1/calculateRoute/{locations}/json?travelMode={travelMode}&key={apiKey}";
 
             // Make the asynchronous GET request
             HttpResponseMessage response = await _client.GetAsync(url);

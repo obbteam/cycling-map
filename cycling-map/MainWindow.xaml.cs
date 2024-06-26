@@ -11,13 +11,12 @@ public partial class MainWindow : Window
     private const string ApiKey = "4Qz1nAMjo2oqVAGoe1VteCrgVlR6ieiS";
     private int _zoomLevel = 13;
 
-    private int _tileX = 4250;
+    private int _tileX = 4252;
 
     //4252,4250
-    private int _tileY = 2696;
+    private int _tileY = 2697;
 
     //2697,2696
-    private const double tileSize = 9.55463;
     string address;
     string address2;
     private string coordUrl;
@@ -25,16 +24,29 @@ public partial class MainWindow : Window
     private Location firstPoint = null;
     private Location secondPoint = null;
     private List<Location> RoutePoints = new List<Location>();
-    private bool SearchPressed = false;
 
 
     public MainWindow()
     {
         InitializeComponent();
+        LoadTravelModes();
         LoadMapTile(_zoomLevel, _tileX, _tileY); // load initial
-        //TODO: zoom out if the route is too long
-        //ASDSDJSDLKSDJ
     }
+
+
+    private void LoadTravelModes()
+    {
+        List<string> travelModes = new List<string>
+        {
+            "Pedestrian",
+            "Bicycle",
+            "Car"
+        };
+
+        TravelComboBox.ItemsSource = travelModes;
+        TravelComboBox.SelectedIndex = 1; // Optional: set the default selected item
+    }
+
 
     public async Task GetGeoCode(HttpClient client)
     {
@@ -92,12 +104,7 @@ public partial class MainWindow : Window
                     mapImage.Source = renderBitmap;
                 }
 
-                //if (firstPoint != null && secondPoint != null)
-                //{
-                //  Location topLeft = calculateXYZToLatLon(x, y, zoom);
-                // Location botRight = calculateXYZToLatLon(x + 1, y + 1, zoom);
-                // Add code to display pixelCoordinate on the map, if needed.
-                //}
+                
             }
             catch (HttpRequestException e)
             {
@@ -160,8 +167,10 @@ public partial class MainWindow : Window
             firstPoint,
             secondPoint
         };
-        var responseSummary = new Summary();
-        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey);
+
+        var travelMode = TravelComboBox.SelectedValue.ToString().ToLower();
+
+        var response = await CalculateRoute.GetRouteAsync(initialPoints, ApiKey, travelMode);
 
         collectSummaryInfo(response);
 
@@ -169,7 +178,18 @@ public partial class MainWindow : Window
         (_tileX, _tileY, _zoomLevel) = PointsComputation.calculateBoundingBox(firstPoint, secondPoint, RoutePoints);
         LoadMapTile(_zoomLevel, _tileX, _tileY);
 
+        renderImage(travelMode);
+
         MessageBox.Show("Route calculation complete.");
+    }
+
+    void renderImage(string travelMode)
+    {
+        BitmapImage bitmap = new BitmapImage();
+        bitmap.BeginInit();
+        bitmap.UriSource = new Uri($"pack://application:,,,/images/{travelMode}.png");
+        bitmap.EndInit();
+        ModeImage.Source = bitmap;
     }
 
     void collectSummaryInfo(Route RouteInfo)

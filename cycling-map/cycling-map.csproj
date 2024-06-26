@@ -9,4 +9,12 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Remove="images\bicycle.png" />
+      <Resource Include="images\bicycle.png" />
+      <Resource Include="images\car.png" />
+      <None Remove="images\pedestrian.png" />
+      <Resource Include="images\pedestrian.png" />
+    </ItemGroup>
+
 </Project>

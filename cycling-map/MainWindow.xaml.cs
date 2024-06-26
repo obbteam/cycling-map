@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -116,7 +117,6 @@ public partial class MainWindow : Window
     }
 
 
-
     private async void btnLoadMap_Click(object sender, RoutedEventArgs e)
     {
         address = Uri.EscapeDataString(txtAddress1.Text); // Corrected to get text from input fields
@@ -126,7 +126,7 @@ public partial class MainWindow : Window
 
         await GetGeoCode(new HttpClient());
         //calculateBoundingBox();
-        (_tileX,_tileY,_zoomLevel) = PointsComputation.calculateBoundingBox(firstPoint, secondPoint, RoutePoints);
+        (_tileX, _tileY, _zoomLevel) = PointsComputation.calculateBoundingBox(firstPoint, secondPoint, RoutePoints);
         LoadMapTile(_zoomLevel, _tileX, _tileY);
     }
 
@@ -176,8 +176,8 @@ public partial class MainWindow : Window
 
     void collectSummaryInfo(Route RouteInfo)
     {
-        routeInfoLabel.Content = $"Distance: {RouteInfo.Summary.LengthInMeters.ToString()} meters.\n " +
-                                 $"Departure time:{RouteInfo.Summary.DepartureTime.ToString()}.\n " +
-                                 $"arrival time:{RouteInfo.Summary.ArrivalTime.ToString()}.\n";
+        routeInfoLabel.Content = $"Distance: {RouteInfo.Summary.LengthInMeters.ToString()} m.\n" +
+                                 $"Departure: {RouteInfo.Summary.DepartureTime.ToString()}.\n" +
+                                 $"Arrival: {RouteInfo.Summary.ArrivalTime.ToString()}.";
     }
 }

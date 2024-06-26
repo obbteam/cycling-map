@@ -82,11 +82,6 @@ namespace cycling_map
 
         public static (int,int, int) calculateBoundingBox(Location firstPoint, Location secondPoint, List<Location> RoutePoints)
         {
-            if(firstPoint == null || secondPoint == null)
-            {
-                MessageBox.Show("Please enter two addresses first.");
-                return (0, 0, 0);
-            }
             var bbox = new BoundingBox(firstPoint.Lon(), firstPoint.Lon(), firstPoint.Lat(), firstPoint.Lat());
             foreach (var point in RoutePoints)
             {

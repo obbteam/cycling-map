@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace cycling_map;
@@ -21,8 +18,8 @@ public partial class MainWindow : Window
 
     //2697,2696
     private const double tileSize = 9.55463;
-    string address = "Molenstraat 74";
-    string address2 = "Oosterstraat 190";
+    string address;
+    string address2;
     private string coordUrl;
     private string coordUrl2;
     private Location firstPoint = null;
@@ -169,7 +166,6 @@ public partial class MainWindow : Window
         collectSummaryInfo(response);
 
         RoutePoints = PointsComputation.collectRoutePoints(response);
-        _zoomLevel = 22;
         (_tileX, _tileY, _zoomLevel) = PointsComputation.calculateBoundingBox(firstPoint, secondPoint, RoutePoints);
         LoadMapTile(_zoomLevel, _tileX, _tileY);
 

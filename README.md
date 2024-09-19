@@ -15,6 +15,9 @@
 ## Introduction
 **Cycling-map** is a C# WPF (Windows Presentation Foundation) application designed to find the shortest path from A to B (designed as the map for bicycles but now its just a map). This README provides instructions on how to set up, run, and contribute to the project using Rider or Visual Studio.
 
+Example usage with 2 adresses and bicycle mode:
+![image](https://github.com/user-attachments/assets/2c7de98d-efd4-4137-b4e4-1284b50a9ec4)
+
 ## Prerequisites
 Before you begin, ensure you have met the following requirements:
 - **Windows Operating System** (required for WPF applications)
